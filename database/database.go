@@ -3,10 +3,11 @@ package database
 import (
 	"errors"
 	"fmt"
-	"gorm.io/driver/sqlserver"
-	"gorm.io/gorm"
 	"os"
 	"strconv"
+
+	"gorm.io/driver/sqlserver"
+	"gorm.io/gorm"
 )
 
 var database_Azure *gorm.DB = nil
@@ -26,6 +27,7 @@ func connect() (*gorm.DB, error) {
 		host, user, password, port, database)
 	fmt.Println(dsn)
 	db, err := gorm.Open(sqlserver.Open(dsn), &gorm.Config{})
+	db.Callback().Create().Remove("mssql:set_identity_insert")
 	return db, err
 }
 

@@ -23,7 +23,6 @@ type Usuario struct {
 	Texto    string
 	Correo   string
 	clave1   string
-	clave2   string
 }
 
 func (U *Usuario) Validar_llave(clave string) error {
@@ -32,19 +31,28 @@ func (U *Usuario) Validar_llave(clave string) error {
 	if nueva_clave == U.clave1 {
 		return nil
 	}
-	return errors.New("Error,llave incorrecta ")
+	return errors.New("error,llave incorrecta ")
 }
 
-func Crear_usuario(Nombre string, Apellido string, Telefono int, Cedula int, Texto string, Correo, Clave string) error {
+func Crear_usuario(Nombre string, Apellido string, Telefono int, Cedula int, Texto string, Correo, Clave string) (error, Usuario) {
 
 	if utilidades.Validar_correo(Correo) {
-		return errors.New("Error Correo Incorrecto")
+		return errors.New("error Correo Incorrecto"), Usuario{}
+	}
+	clave2 := utilidades.GenerarSHA254(Clave)
+
+	enc, err := utilidades.EncryptAES([]byte(clave2), Texto)
+	if err != nil {
+
+		return errors.New("error, Clave no pudo ser creado"), Usuario{}
 	}
 
 	var u Usuario = Usuario{
 		Nombre:   Nombre,
 		Apellido: Apellido,
 		Cedula:   Cedula,
+		Texto:    enc,
+		clave1:   clave2,
 	}
-
+	return nil, u
 }

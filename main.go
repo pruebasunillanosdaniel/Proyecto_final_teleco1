@@ -1,12 +1,11 @@
 package main
 
 import (
-	"fmt"
 	"log"
+	"proyecto_teleco/controlador"
 )
 
 func main() {
-	log.Println("******")
 
-	fmt.Print("aaa")
+	log.Println(controlador.Enviar_mensaje("solrevisdor143@gmail.com", "prueba", "Hola Mundo"))
 }
