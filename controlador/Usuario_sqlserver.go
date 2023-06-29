@@ -4,24 +4,21 @@ import (
 	"errors"
 	"proyecto_teleco/database"
 	"proyecto_teleco/modelo"
-
-	"gorm.io/gorm"
 )
 
 func Crear_usuario(U *modelo.Usuario) error {
 
-	var db *gorm.DB = database.Database()
+	db, _ := database.Database()
 	if db != nil {
 		return errors.New("errores creando Usuario")
 	}
-
 	err := db.Create(U).Error
 	return err
 }
 
 func Update_usuario(U *modelo.Usuario) error {
 
-	var db *gorm.DB = database.Database()
+	db, _ := database.Database()
 	if db != nil {
 		return errors.New("errores creando Usuario")
 	}
@@ -32,7 +29,7 @@ func Update_usuario(U *modelo.Usuario) error {
 
 func Read_usuario(id uint) (modelo.Usuario, error) {
 
-	var db *gorm.DB = database.Database()
+	db, _ := database.Database()
 	var U modelo.Usuario
 	if db != nil {
 		return U, errors.New("errores creando Usuario")
@@ -45,7 +42,7 @@ func Read_usuario(id uint) (modelo.Usuario, error) {
 
 func List_all_user() ([]modelo.Usuario, error) {
 
-	var db *gorm.DB = database.Database()
+	db, _ := database.Database()
 	var U []modelo.Usuario
 	if db != nil {
 		return nil, errors.New("errores creando Usuario")
