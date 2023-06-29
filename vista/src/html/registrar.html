@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Session</title>
+    <link rel="stylesheet" href="./css/materialize.min.css">
+</head>
+<body>
+    <nav>
+        <div><a href="/index">Inicio</a> <div>About: Proyecto Teleinformatica Daniel humberto Salgado Gonzalez </div></div>
+    </nav>
+    <div class="container center">
+        <form>
+            <label for="name"> Nombre usuario  </label>
+            <input type="text" name="name" id="name">
+            <label for="apellido"> Apellido usuario  </label>
+            <input type="text" name="apellido" id="apellido">  
+            <label for="telefono"> Telefono  usuario  </label>
+            <input type="tel" name="telefono" id="telefono"> 
+            <label for="cedula"> Numero  identificacion  </label>
+            <input type="number" name="num_ide" id="num_ide" min="1" step="1" pattern="\d*">     
+            <label for="tipo_ide">Tipo  de identificacion</label>
+            <select name="tipo_ide" id="tipo_ide">
+                <option value="CC">CC</option>
+                <option value="CE">CE</option>
+                <option value="TI">TI</option>
+            </select>
+            <label for="texto">Texto a decifrar</label>
+            <textarea name="texto" id="texto" cols="30" rows="10">
+
+            </textarea>
+            <label for="correo">Correo electronico</label>
+            <input type="email" name="correo" id="correo">
+          
+            <label for="clave">Clave </label>
+            <input type="password" name="clave" id="clave"> 
+            <button type="submit" class=" btn waves-effect waves-light">Registrar</button>
+        </form>
+    </div>
+  
+</body>
+</html>

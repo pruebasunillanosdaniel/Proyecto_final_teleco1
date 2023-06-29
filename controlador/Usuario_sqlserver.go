@@ -35,7 +35,20 @@ func Read_usuario(id uint) (modelo.Usuario, error) {
 		return U, errors.New("errores creando Usuario")
 	}
 
-	err := db.Where("id=?", id).First(&U).Error
+	err := db.Where("ID=?", id).First(&U).Error
+	return U, err
+
+}
+
+func Delete_usuario(id uint) (modelo.Usuario, error) {
+
+	db, _ := database.Database()
+	var U modelo.Usuario
+	if db != nil {
+		return U, errors.New("errores creando Usuario")
+	}
+
+	err := db.Where("ID=?", id).Delete(&U).Error
 	return U, err
 
 }

@@ -20,9 +20,9 @@ func connect() (*gorm.DB, error) {
 	var user string = utilidades.Azure_user
 	var password string = utilidades.Azure_password
 
-	dsn := fmt.Sprintf("server=%s;user id=%s;password=%s;port=%d ;database=%s;",
+	var dsn string = fmt.Sprintf("server=%s;user id=%s;password=%s;port=%d ;database=%s;",
 		host, user, password, port, database)
-	fmt.Println(dsn)
+	//fmt.Println(dsn)
 	db, err := gorm.Open(sqlserver.Open(dsn), &gorm.Config{})
 	//db.Callback().Create().Remove("mssql:set_identity_insert")
 	return db, err

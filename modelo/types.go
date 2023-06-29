@@ -3,6 +3,8 @@ package modelo
 import (
 	"errors"
 	"proyecto_teleco/utilidades"
+
+	"gorm.io/gorm"
 )
 
 type Tipo_ide string
@@ -14,12 +16,12 @@ const (
 )
 
 type Usuario struct {
-	Id       int
+	gorm.Model
 	Nombre   string
 	Apellido string
 	Telefono int
-	Tipo_id  Tipo_ide
-	Cedula   int
+	Tipo_id  Tipo_ide `gorm:"index:idx_member"`
+	Num_ide  int      `gorm:"index:idx_member"`
 	Texto    string
 	Correo   string
 	clave1   string
@@ -34,7 +36,8 @@ func (U *Usuario) Validar_llave(clave string) error {
 	return errors.New("error,llave incorrecta ")
 }
 
-func Crear_usuario(Nombre string, Apellido string, Telefono int, Cedula int, Texto string, Correo, Clave string) (error, Usuario) {
+func Crear_usuario(Nombre string, Apellido string, Telefono int,
+	Num_ide int, Texto string, Correo, Clave string) (error, Usuario) {
 
 	if utilidades.Validar_correo(Correo) {
 		return errors.New("error Correo Incorrecto"), Usuario{}
@@ -50,7 +53,7 @@ func Crear_usuario(Nombre string, Apellido string, Telefono int, Cedula int, Tex
 	var u Usuario = Usuario{
 		Nombre:   Nombre,
 		Apellido: Apellido,
-		Cedula:   Cedula,
+		Num_ide:  Num_ide,
 		Texto:    enc,
 		clave1:   clave2,
 	}

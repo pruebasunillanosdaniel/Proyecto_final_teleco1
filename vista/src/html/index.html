@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar session</title>
+    <link rel="stylesheet" href="./css/materialize.min.css">
+
+</head>
+<body>
+    <nav>
+        <div class="nav-wrapper">
+          <a href="registrar.html" class="brand-logo">Registrase</a>
+          <ul id="nav-mobile" class="right hide-on-med-and-down">
+            <li><a href="#">Daniel Humberto Salgado Gonzalez</a></li>
+            <li><a href="#">160003935</a></li>
+            <li><a href="#">Teleinformatica 1</a></li>
+          </ul>
+        </div>
+      </nav>    
+    <div class="container center">
+        <form action="">
+
+            <input type="number" name="num_ide" id="num_ide" min="1" step="1" pattern="\d*">     
+            <label for="tipo_ide">Tipo  de identificacion</label>
+            <select name="tipo_ide" id="tipo_ide">
+                <option value="CC">CC</option>
+                <option value="CE">CE</option>
+                <option value="TI">TI</option>
+            </select>
+            <label for="clave">Clave </label>
+            <input type="password" name="clave" id="clave"> 
+            <button type="submit">Iniciar session</button>
+        </form>
+    </div>
+</body>
+</html>
