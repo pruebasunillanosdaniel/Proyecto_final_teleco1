@@ -11,6 +11,8 @@ var (
 	Azure_port     string = os.Getenv("azure_port")
 	Azure_user     string = os.Getenv("azure_user")
 	Azure_password string = os.Getenv("azure_password")
+	Secret_jwt     string = os.Getenv("secret_jwt")
+	Clave_texto16  string = os.Getenv("clave_texto16")
 )
 
 //teleinfouser.database.windows.net

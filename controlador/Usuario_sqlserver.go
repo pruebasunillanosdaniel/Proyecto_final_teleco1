@@ -63,3 +63,18 @@ func List_all_user() ([]modelo.Usuario, error) {
 	err := db.Find(&U).Error
 	return U, err
 }
+
+func Get_User_by_unique(tipo_ide modelo.Tipo_ide, identificacion uint) (modelo.Usuario, error) {
+
+	db, _ := database.Database()
+	var u modelo.Usuario
+	err := db.Model(&modelo.Usuario{}).
+		Where(&modelo.Usuario{Num_ide: identificacion, Tipo_id: tipo_ide}).
+		First(&u).Error
+
+	if err != nil {
+		return modelo.Usuario{}, errors.New("NO existe el usuario")
+	}
+
+	return u, nil
+}

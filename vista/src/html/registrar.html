@@ -11,30 +11,36 @@
         <div><a href="/index">Inicio</a> <div>About: Proyecto Teleinformatica Daniel humberto Salgado Gonzalez </div></div>
     </nav>
     <div class="container center">
-        <form>
+        <form method="post" >
             <label for="name"> Nombre usuario  </label>
-            <input type="text" name="name" id="name">
+            <input type="text" name="name" id="name" required>
             <label for="apellido"> Apellido usuario  </label>
-            <input type="text" name="apellido" id="apellido">  
+            <input type="text" name="apellido" id="apellido" required>  
             <label for="telefono"> Telefono  usuario  </label>
-            <input type="tel" name="telefono" id="telefono"> 
+            <input type="tel" name="telefono" id="telefono" required> 
             <label for="cedula"> Numero  identificacion  </label>
-            <input type="number" name="num_ide" id="num_ide" min="1" step="1" pattern="\d*">     
-            <label for="tipo_ide">Tipo  de identificacion</label>
-            <select name="tipo_ide" id="tipo_ide">
+            <input type="number" name="num_ide" id="num_ide" min="1" step="1" pattern="\d*" required>     
+            <label for="tipo_ide">Tipo de documento</label>   
+
+            <div class="input-field col s12">
+
+            <select name="tipo_ide" id="tipo_ide" class="browser-default" required>
                 <option value="CC">CC</option>
                 <option value="CE">CE</option>
                 <option value="TI">TI</option>
             </select>
-            <label for="texto">Texto a decifrar</label>
-            <textarea name="texto" id="texto" cols="30" rows="10">
 
+            </div>
+            <label for="texto">Texto a decifrar</label>
+            <div class="input-field col s12">
+            <textarea name="texto" id="texto" cols="30" rows="40"  class="materialize-textarea" required>
             </textarea>
+            </div>
             <label for="correo">Correo electronico</label>
-            <input type="email" name="correo" id="correo">
+            <input type="email" name="correo" id="correo" required>
           
             <label for="clave">Clave </label>
-            <input type="password" name="clave" id="clave"> 
+            <input type="password" name="clave" id="clave" required> 
             <button type="submit" class=" btn waves-effect waves-light">Registrar</button>
         </form>
     </div>

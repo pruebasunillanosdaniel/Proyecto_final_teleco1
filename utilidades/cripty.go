@@ -2,40 +2,53 @@ package utilidades
 
 import (
 	"crypto/aes"
+	"crypto/cipher"
 	"crypto/sha256"
-	"encoding/hex"
 	"errors"
+	"fmt"
+	"strings"
 	"time"
 )
 
-func EncryptAES(key []byte, plaintext string) (string, error) {
+func EncryptAES(key string, texto string) (string, error) {
 
-	c, err := aes.NewCipher(key)
+	if len(key) != 32 {
+		if len(key) < 32 {
+			key = strings.Trim(strings.ReplaceAll(fmt.Sprint(make([]int, 32-len(key))), " ", ""), "[]") + key
+		} else {
+			return "", errors.New("Clave superior a lo permitido por favor una clave menor a 32 caracteres")
+		}
+	}
+	var texto_stream []byte = []byte(texto)
+	texto_stream = []byte(texto)
+	blockCipher, _ := aes.NewCipher([]byte(key))
+	stream := cipher.NewCTR(blockCipher, []byte(Clave_texto16))
+	stream.XORKeyStream(texto_stream, texto_stream)
+
+	return string(texto_stream), nil
+
+}
+
+func DecryptAES(key string, ct string) (string, error) {
+	if len(key) != 32 {
+		if len(key) < 32 {
+			key = strings.Trim(strings.ReplaceAll(fmt.Sprint(make([]int, 32-len(key))), " ", ""), "[]") + key
+		} else {
+			return "", errors.New("Clave superior a lo permitido por favor una clave menor a 32 caracteres")
+		}
+	}
+	block, err := aes.NewCipher([]byte(key))
 	if err != nil {
 		return "", err
 	}
-	out := make([]byte, len(plaintext))
 
-	c.Encrypt(out, []byte(plaintext))
-
-	return hex.EncodeToString(out), nil
+	var CPtext []byte = []byte(ct)
+	mode := cipher.NewCTR(block, []byte(Clave_texto16))
+	mode.XORKeyStream(CPtext, CPtext)
+	return string(CPtext), nil
 }
 
-func DecryptAES(key []byte, ct string) (string, error) {
-	ciphertext, _ := hex.DecodeString(ct)
-
-	c, err := aes.NewCipher(key)
-	if err != nil {
-		return "", err
-	}
-
-	pt := make([]byte, len(ciphertext))
-	c.Decrypt(pt, ciphertext)
-	s := string(pt[:])
-	return s, nil
-}
-
-func CompareAES(key []byte, text_compare string, key_compare []byte) (bool, error) {
+func CompareAES(key string, text_compare string, key_compare string) (bool, error) {
 
 	encriptado1, err := DecryptAES(key, text_compare)
 	if err != nil {

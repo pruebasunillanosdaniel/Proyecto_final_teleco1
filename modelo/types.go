@@ -3,8 +3,6 @@ package modelo
 import (
 	"errors"
 	"proyecto_teleco/utilidades"
-
-	"gorm.io/gorm"
 )
 
 type Tipo_ide string
@@ -16,28 +14,29 @@ const (
 )
 
 type Usuario struct {
-	gorm.Model
-	Nombre   string
-	Apellido string
-	Telefono int
-	Tipo_id  Tipo_ide `gorm:"index:idx_member"`
-	Num_ide  int      `gorm:"index:idx_member"`
-	Texto    string
-	Correo   string
-	clave1   string
+	ID       uint     `json:"Id",gorm:"primaryKey"`
+	Nombre   string   `json:"Nombre"`
+	Apellido string   `json:"Apellido"`
+	Telefono int      `json:"Telefono"`
+	Tipo_id  Tipo_ide `json:"Tipo_id",gorm:"index:idx_member"`
+	Num_ide  uint     `json:"Num_ide",gorm:"index:idx_member"`
+	admin    bool     `json:"admin,omitempty"`
+	Texto    string   `json:"Texto"`
+	Correo   string   `json:"Correo"`
+	Clave1   string   `json:"Clave"`
 }
 
 func (U *Usuario) Validar_llave(clave string) error {
 
 	var nueva_clave string = utilidades.GenerarSHA254(clave)
-	if nueva_clave == U.clave1 {
+	if nueva_clave == U.Clave1 {
 		return nil
 	}
 	return errors.New("error,llave incorrecta ")
 }
 
 func Crear_usuario(Nombre string, Apellido string, Telefono int,
-	Num_ide int, Texto string, Correo, Clave string) (error, Usuario) {
+	Num_ide uint, Texto string, Correo, Clave string) (error, Usuario) {
 
 	if utilidades.Validar_correo(Correo) {
 		return errors.New("error Correo Incorrecto"), Usuario{}
@@ -55,7 +54,7 @@ func Crear_usuario(Nombre string, Apellido string, Telefono int,
 		Apellido: Apellido,
 		Num_ide:  Num_ide,
 		Texto:    enc,
-		clave1:   clave2,
+		Clave1:   clave2,
 	}
 	return nil, u
 }
