@@ -25,6 +25,7 @@ func Crear_servidor() {
 	app.Patch("/UPDATE", Update_usuario)
 	app.Delete("/List_users", Delete_usuario)
 	app.Get("/Validar", Valida_db)
+	app.Get("/PATHS", Valida_db_variables)
 
 	port := os.Getenv("HTTP_PLATFORM_PORT")
 
