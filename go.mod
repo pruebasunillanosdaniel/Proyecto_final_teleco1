@@ -3,18 +3,14 @@ module proyecto_teleco
 go 1.20
 
 require (
+	github.com/gofiber/fiber/v2 v2.47.0
 	gopkg.in/gomail.v2 v2.0.0-20160411212932-81ebce5c23df
 	gorm.io/driver/sqlserver v1.5.1
 	gorm.io/gorm v1.25.1
 )
 
 require (
-	github.com/MicahParks/keyfunc/v2 v2.1.0 // indirect
 	github.com/andybalholm/brotli v1.0.5 // indirect
-	github.com/gofiber/contrib/jwt v1.0.2 // indirect
-	github.com/gofiber/fiber/v2 v2.47.0 // indirect
-	github.com/golang-jwt/jwt v3.2.2+incompatible // indirect
-	github.com/golang-jwt/jwt/v5 v5.0.0 // indirect
 	github.com/golang-sql/civil v0.0.0-20220223132316-b832511892a9 // indirect
 	github.com/golang-sql/sqlexp v0.1.0 // indirect
 	github.com/google/uuid v1.3.0 // indirect
