@@ -1,7 +1,7 @@
 name: CI/CL  github with AZURE
 on:
     push:
-      branches: [ master ,main ]
+      branches: [ master  ]
 
 jobs:
 
