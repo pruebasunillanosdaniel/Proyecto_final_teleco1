@@ -118,7 +118,8 @@ func List_all_usuario(c *fiber.Ctx) error {
 			return c.SendStatus(http.StatusBadRequest)
 		}
 		if u.Is_admin() {
-			return c.JSON(controlador.List_all_user())
+			a, _ := controlador.List_all_user()
+			return c.JSON(a)
 		}
 	}
 	return c.SendStatus(http.StatusBadRequest)
