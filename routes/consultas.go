@@ -86,7 +86,7 @@ func Delete_usuario(c *fiber.Ctx) error {
 	if err := c.BodyParser(Lg); err != nil {
 		u, err2 := controlador.Get_User_by_unique(Lg.Tipo_ide, Lg.Numero_identidad)
 		if err2 != nil {
-			return c.SendStatus(http.StatusBadRequest)
+			return c.Status(fiber.StatusBadRequest).SendString("error ::: " + err.Error())
 		}
 
 		if u.Is_admin() {
@@ -115,7 +115,7 @@ func List_all_usuario(c *fiber.Ctx) error {
 	if err := c.BodyParser(Lg); err != nil {
 		u, err2 := controlador.Get_User_by_unique(Lg.Tipo_ide, Lg.Numero_identidad)
 		if err2 != nil {
-			return c.SendStatus(http.StatusBadRequest)
+			return c.Status(fiber.StatusBadRequest).SendString("error ::: " + err.Error())
 		}
 		if u.Is_admin() {
 			a, _ := controlador.List_all_user()
