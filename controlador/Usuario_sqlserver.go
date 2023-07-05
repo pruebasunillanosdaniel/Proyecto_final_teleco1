@@ -8,67 +8,70 @@ import (
 
 func Crear_usuario(U *modelo.Usuario) error {
 
-	db, _ := database.Database()
-	if db != nil {
-		return errors.New("errores creando Usuario")
+	db, err := database.Database()
+	if err != nil {
+		return errors.New("errores creando Usuario, fallo conexion DB ")
 	}
-	err := db.Create(U).Error
+	err = db.Table("Usuarios").Create(U).Error
 	return err
 }
 
 func Update_usuario(U *modelo.Usuario) error {
 
-	db, _ := database.Database()
-	if db != nil {
-		return errors.New("errores creando Usuario")
+	db, err := database.Database()
+	if err != nil {
+		return errors.New("errores creando Usuario, fallo conexion DB ")
 	}
-	err := db.Save(U).Error
+	err = db.Save(U).Error
 	return err
 
 }
 
 func Read_usuario(id uint) (modelo.Usuario, error) {
 
-	db, _ := database.Database()
+	db, err := database.Database()
 	var U modelo.Usuario
-	if db != nil {
-		return U, errors.New("errores creando Usuario")
+	if err != nil {
+		return modelo.Usuario{}, errors.New("errores creando Usuario, fallo conexion DB ")
 	}
 
-	err := db.Where("ID=?", id).First(&U).Error
+	err = db.Where("ID=?", id).First(&U).Error
 	return U, err
 
 }
 
-func Delete_usuario(id uint) (modelo.Usuario, error) {
+func Delete_usuario(id uint) error {
 
-	db, _ := database.Database()
+	db, err := database.Database()
 	var U modelo.Usuario
-	if db != nil {
-		return U, errors.New("errores creando Usuario")
+	if err != nil {
+		return errors.New("errores creando Usuario, fallo conexion DB ")
 	}
 
-	err := db.Where("ID=?", id).Delete(&U).Error
-	return U, err
+	err = db.Where("ID=?", id).Delete(&U).Error
+	return err
 
 }
 
 func List_all_user() ([]modelo.Usuario, error) {
 
-	db, _ := database.Database()
+	db, err := database.Database()
 	var U []modelo.Usuario
-	if db != nil {
-		return nil, errors.New("errores creando Usuario")
+	if err != nil {
+		return nil, errors.New("errores listando Usuario,no existen")
 	}
-	err := db.Find(&U).Error
+	err = db.Find(&U).Error
 	return U, err
 }
 
 func Get_User_by_unique(tipo_ide modelo.Tipo_ide, identificacion uint) (modelo.Usuario, error) {
 
-	db, _ := database.Database()
+	db, err := database.Database()
 	var u modelo.Usuario
-	err := db.Model(&modelo.Usuario{}).
+	if err != nil {
+		return modelo.Usuario{}, errors.New("errores DB conexion")
+	}
+	err = db.Model(&modelo.Usuario{}).
 		Where(&modelo.Usuario{Num_ide: identificacion, Tipo_id: tipo_ide}).
 		First(&u).Error
 

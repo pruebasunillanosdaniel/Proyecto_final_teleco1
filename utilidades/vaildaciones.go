@@ -15,3 +15,9 @@ func Validar_clave_signos(text string) bool {
 	var total string = validador.ReplaceAllLiteralString(text, "")
 	return len(total) == 0
 }
+func Validar_telefono(text string) bool {
+	var validar string = "\\d{10}"
+	var validador *regexp.Regexp = regexp.MustCompile(validar)
+	return validador.MatchString(text)
+
+}

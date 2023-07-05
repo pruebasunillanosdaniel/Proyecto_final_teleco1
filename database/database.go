@@ -22,9 +22,10 @@ func connect() (*gorm.DB, error) {
 
 	var dsn string = fmt.Sprintf("server=%s;user id=%s;password=%s;port=%d ;database=%s;",
 		host, user, password, port, database)
-	//fmt.Println(dsn)
+	fmt.Println(dsn)
 	db, err := gorm.Open(sqlserver.Open(dsn), &gorm.Config{})
 	//db.Callback().Create().Remove("mssql:set_identity_insert")
+	db.Debug()
 	return db, err
 }
 

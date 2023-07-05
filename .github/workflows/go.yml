@@ -1,0 +1,33 @@
+name: CI/CL  github with AZURE
+on:
+    push:
+      branches: [ master ,main ]
+
+jobs:
+
+    build:
+      runs-on: windows-latest
+      steps:
+      - uses: actions/checkout@v3
+  
+      - name:  Llamar la accion de Golang 
+        uses: actions/setup-go@v3
+        with:
+          go-version: 20.5
+  
+      - name: Copy archivos estaticos
+        run: xcopy /i vista build\vista
+      - name: Build
+        run: go build -o build/proyecto_final_teleco.exe -v
+  
+      - name: Test
+        run: go test
+        
+      - name: Correr en  Azure
+        uses: Azure/webapps-deploy@v2
+        with:
+          # Name of the Azure Web App
+          app-name: Proyecto-final-teleco1
+          # Applies to Web App only: Path to package or folder. *.zip, *.war, *.jar or a folder to deploy
+          package: build/
+          publish-profile: ${{ secrets.azureWebAppPublishProfile }}

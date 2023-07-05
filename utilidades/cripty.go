@@ -10,6 +10,8 @@ import (
 	"time"
 )
 
+// tomado de https://www.golangprograms.com/advanced-encryption-standard.html
+
 func EncryptAES(key string, texto string) (string, error) {
 
 	if len(key) != 32 {
