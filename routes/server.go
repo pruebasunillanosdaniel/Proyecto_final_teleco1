@@ -29,6 +29,6 @@ func Crear_servidor() {
 		port = "8080"
 	}
 
-	app.Listen("127.0.0.1:" + port)
+	app.Listen(":" + port)
 
 }
