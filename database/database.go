@@ -25,7 +25,6 @@ func connect() (*gorm.DB, error) {
 	fmt.Println(dsn)
 	db, err := gorm.Open(sqlserver.Open(dsn), &gorm.Config{})
 	//db.Callback().Create().Remove("mssql:set_identity_insert")
-	db.Debug()
 	return db, err
 }
 

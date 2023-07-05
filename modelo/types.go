@@ -30,6 +30,9 @@ type Usuario struct {
 func (U *Usuario) Is_admin() bool {
 	return U.admin
 }
+func (U *Usuario) Set_admin() {
+	U.admin = true
+}
 
 func (U *Usuario) Validar_llave(clave string) error {
 	var nueva_clave string = utilidades.GenerarSHA254(clave)

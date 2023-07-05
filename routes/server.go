@@ -20,6 +20,8 @@ func Crear_servidor() {
 	app.Get("/READ/", Get_usuario)
 	app.Patch("/UPDATE", Update_usuario)
 	app.Delete("/List_users", Delete_usuario)
+	app.Get("/Validar", Valida_db)
+
 	port := os.Getenv("HTTP_PLATFORM_PORT")
 
 	// default back to 8080 for local dev
