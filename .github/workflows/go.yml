@@ -17,6 +17,9 @@ jobs:
   
       - name: Copy archivos estaticos
         run: xcopy /i vista build\vista
+      - name: descargar dependencias
+        run: go mod tidy
+         
       - name: Build
         run: go build -o build/proyecto_final_teleco.exe -v
   
