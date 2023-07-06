@@ -6,7 +6,7 @@ import (
 )
 
 func main() {
-	log.Println("v ...any")
+	log.Println("v ...")
 	routes.Crear_servidor()
 
 }
