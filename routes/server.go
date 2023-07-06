@@ -30,7 +30,7 @@ func Crear_servidor() {
 
 	// default back to 8080 for local dev
 	if port == "" {
-		port = "80"
+		port = "8080"
 	}
 
 	app.Listen(":" + port)
