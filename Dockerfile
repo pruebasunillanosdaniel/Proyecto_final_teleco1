@@ -19,4 +19,4 @@ USER app
 # ejecutar binario
 ENTRYPOINT ["/usr/local/bin/app"]
 # habilitar puerto 9000
-EXPOSE 80
+EXPOSE 9000
