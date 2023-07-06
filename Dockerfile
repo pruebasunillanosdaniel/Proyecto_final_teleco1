@@ -15,3 +15,8 @@ RUN addgroup -S app && adduser -S app -G app
 # crear  permisos para usuario app sobre el binario
 RUN chown app /usr/local/bin/app
 # cambiar a usuario app
+USER app
+# ejecutar binario
+ENTRYPOINT ["/usr/local/bin/app"]
+# habilitar puerto 9000
+EXPOSE 9000
