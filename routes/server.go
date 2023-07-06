@@ -12,7 +12,7 @@ func Crear_servidor() {
 
 	app.Static("/css", "./vista/src/html/css")
 	app.Get("/hola", func(c *fiber.Ctx) error {
-		return c.JSON(map[string]string{"aaa": "asdasdf"})
+		return c.JSON(map[string]string{"Saludo": "SAludos a todos esto es por >DEBUG"})
 	})
 
 	app.Get("", func(c *fiber.Ctx) error {

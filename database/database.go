@@ -2,7 +2,6 @@ package database
 
 import (
 	"fmt"
-	"log"
 	"proyecto_teleco/utilidades"
 	"strconv"
 
@@ -33,8 +32,7 @@ func Database() (*gorm.DB, error) {
 	if database_Azure == nil {
 		db, err := connect()
 		if err != nil {
-			log.Fatal(err)
-			return &gorm.DB{}, nil
+			return &gorm.DB{}, err
 		}
 		database_Azure = db
 		return database_Azure, nil

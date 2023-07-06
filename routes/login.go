@@ -22,11 +22,9 @@ func Valida_db(c *fiber.Ctx) error {
 func Valida_db_variables(c *fiber.Ctx) error {
 
 	return c.JSON(fiber.Map{
-		"host":     utilidades.Azure_host,
-		"port":     utilidades.Azure_port,
-		"user":     utilidades.Azure_user,
-		"password": utilidades.Azure_password,
-		"db":       utilidades.Azure_db,
+		"host": utilidades.Azure_host,
+		"port": utilidades.Azure_port,
+		"db":   utilidades.Azure_db,
 	})
 
 }
