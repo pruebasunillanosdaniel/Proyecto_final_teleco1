@@ -2,6 +2,7 @@ package controlador
 
 import (
 	"errors"
+	"log"
 	"proyecto_teleco/database"
 	"proyecto_teleco/modelo"
 	"proyecto_teleco/utilidades"
@@ -105,7 +106,8 @@ func Create_admin() error {
 
 	db, err := database.Database()
 
-	clave1 := utilidades.GenerarSHA254("admin")
+	db.AutoMigrate(&modelo.Usuario{})
+	clave1 := utilidades.GenerarSHA256_with_32bits("admin")
 	texto, _ := utilidades.EncryptAES(clave1, "Hola mundo")
 	var u modelo.Usuario = modelo.Usuario{
 		ID:       1,
@@ -119,6 +121,8 @@ func Create_admin() error {
 		Texto:    texto,
 	}
 	u.Set_admin()
+
+	log.Println(u.Is_admin())
 
 	if err != nil {
 		return err

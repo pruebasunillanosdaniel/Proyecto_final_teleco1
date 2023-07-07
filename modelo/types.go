@@ -21,21 +21,21 @@ type Usuario struct {
 	Telefono int      `json:"Telefono"`
 	Tipo_id  Tipo_ide `json:"Tipo_id" gorm:"index:idx_member,unique"`
 	Num_ide  uint     `json:"Num_ide" gorm:"index:idx_member,unique"`
-	admin    bool     `json:"admin,omitempty"`
+	Admin    bool     `json:"admin,omitempty" `
 	Texto    string   `json:"Texto"`
 	Correo   string   `json:"Correo"`
 	Clave1   string   `json:"Clave"`
 }
 
 func (U *Usuario) Is_admin() bool {
-	return U.admin
+	return U.Admin
 }
 func (U *Usuario) Set_admin() {
-	U.admin = true
+	U.Admin = true
 }
 
 func (U *Usuario) Validar_llave(clave string) error {
-	var nueva_clave string = utilidades.GenerarSHA254(clave)
+	var nueva_clave string = utilidades.GenerarSHA256_with_32bits(clave)
 	if nueva_clave == U.Clave1 {
 		return nil
 	}
@@ -59,7 +59,7 @@ func (U *Usuario) Validar_usuario() error {
 	if U.Clave1 != "" {
 		return errors.New("error Clave  Vacio")
 	}
-	clave2 := utilidades.GenerarSHA254(U.Clave1)
+	clave2 := utilidades.GenerarSHA256_with_32bits(U.Clave1)
 
 	enc, err := utilidades.EncryptAES(clave2, U.Texto)
 	if err != nil {
@@ -95,7 +95,7 @@ func (U *Usuario) Update_usuario(Un *Usuario) error {
 		if err2 != nil {
 			return err2
 		}
-		clave2 := utilidades.GenerarSHA254(Un.Clave1)
+		clave2 := utilidades.GenerarSHA256_with_32bits(Un.Clave1)
 		enc, err := utilidades.EncryptAES(clave2, txt)
 		if err != nil {
 			return err

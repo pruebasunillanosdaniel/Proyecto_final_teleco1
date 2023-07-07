@@ -3,6 +3,7 @@ package utilidades
 import (
 	"crypto/aes"
 	"crypto/sha256"
+	"encoding/base64"
 	"encoding/hex"
 	"errors"
 	"fmt"
@@ -81,12 +82,16 @@ func CompareAES(key string, text_compare string, key_compare string) (bool, erro
 
 }
 
-func GenerarSHA254(texto string) string {
+func GenerarSHA256_with_32bits(texto string) string {
+	if len(texto) < 32 {
+		texto = strings.Trim(strings.ReplaceAll(fmt.Sprint(make([]int, 32-len(texto))), " ", ""), "[]") + texto
+	}
+
 	conv := sha256.Sum256([]byte(texto))
-	return string(conv[:])
+	return base64.StdEncoding.EncodeToString(conv[:])
 }
 
 func GenerarShawithTime() string {
 	tiempo := time.Now().String()
-	return GenerarSHA254(tiempo)
+	return GenerarSHA256_with_32bits(tiempo)
 }
