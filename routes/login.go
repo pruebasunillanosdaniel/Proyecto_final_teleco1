@@ -15,7 +15,7 @@ func Valida_db(c *fiber.Ctx) error {
 		return c.JSON(fiber.Map{"error": err.Error()})
 
 	}
-	return c.JSON(fiber.Map{"error": "OK" + fmt.Sprint(db)})
+	return c.JSON(fiber.Map{"OK": "OK" + fmt.Sprint(db)})
 
 }
 

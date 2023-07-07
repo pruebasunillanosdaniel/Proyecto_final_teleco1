@@ -81,3 +81,25 @@ func Get_User_by_unique(tipo_ide modelo.Tipo_ide, identificacion uint) (modelo.U
 
 	return u, nil
 }
+
+func Create_admin() error {
+
+	db, err := database.Database()
+	var u modelo.Usuario = modelo.Usuario{
+		ID:       1,
+		Nombre:   "admin",
+		Apellido: "admin",
+		Correo:   "solrevisdor143@gmail.com",
+		Telefono: 0000000000,
+		Num_ide:  0,
+		Tipo_id:  "CC",
+		Clave1:   "8C6976E5B5410415BDE908BD4DEE15DFB167A9C873FC4BB8A81F6F2AB448A918",
+		Texto:    "",
+	}
+
+	if err != nil {
+		return err
+	}
+	err = db.Model(&modelo.Usuario{}).FirstOrCreate(&u).Error
+	return err
+}
