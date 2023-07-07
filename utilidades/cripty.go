@@ -2,10 +2,11 @@ package utilidades
 
 import (
 	"crypto/aes"
-	"crypto/cipher"
 	"crypto/sha256"
+	"encoding/hex"
 	"errors"
 	"fmt"
+	"log"
 	"strings"
 	"time"
 )
@@ -21,17 +22,27 @@ func EncryptAES(key string, texto string) (string, error) {
 			return "", errors.New("Clave superior a lo permitido por favor una clave menor a 32 caracteres")
 		}
 	}
-	var texto_stream []byte = []byte(texto)
-	texto_stream = []byte(texto)
-	blockCipher, _ := aes.NewCipher([]byte(key))
-	stream := cipher.NewCTR(blockCipher, []byte(Clave_texto16))
-	stream.XORKeyStream(texto_stream, texto_stream)
 
-	return string(texto_stream), nil
+	c, err := aes.NewCipher([]byte(key))
+	if err != nil {
+		return "", err
+	}
+	if len(texto) < aes.BlockSize {
+
+		texto = strings.Trim(strings.ReplaceAll(fmt.Sprint(make([]int, aes.BlockSize-len(texto))), " ", ""), "[]") + key
+	}
+
+	out := make([]byte, len(texto))
+
+	c.Encrypt(out, []byte(texto))
+
+	return hex.EncodeToString(out), nil
 
 }
 
 func DecryptAES(key string, ct string) (string, error) {
+	log.Println(key)
+
 	if len(key) != 32 {
 		if len(key) < 32 {
 			key = strings.Trim(strings.ReplaceAll(fmt.Sprint(make([]int, 32-len(key))), " ", ""), "[]") + key
@@ -39,15 +50,17 @@ func DecryptAES(key string, ct string) (string, error) {
 			return "", errors.New("Clave superior a lo permitido por favor una clave menor a 32 caracteres")
 		}
 	}
-	block, err := aes.NewCipher([]byte(key))
+	log.Println(key)
+	ciphertext, _ := hex.DecodeString(ct)
+
+	c, err := aes.NewCipher([]byte(key))
 	if err != nil {
 		return "", err
 	}
+	pt := make([]byte, len(ciphertext))
+	c.Decrypt(pt, ciphertext)
 
-	var CPtext []byte = []byte(ct)
-	mode := cipher.NewCTR(block, []byte(Clave_texto16))
-	mode.XORKeyStream(CPtext, CPtext)
-	return string(CPtext), nil
+	return string(pt[:]), nil
 }
 
 func CompareAES(key string, text_compare string, key_compare string) (bool, error) {

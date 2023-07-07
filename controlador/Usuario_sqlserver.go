@@ -4,6 +4,7 @@ import (
 	"errors"
 	"proyecto_teleco/database"
 	"proyecto_teleco/modelo"
+	"proyecto_teleco/utilidades"
 )
 
 func Crear_usuario(U *modelo.Usuario) error {
@@ -35,7 +36,7 @@ func Read_usuario(id uint) (modelo.Usuario, error) {
 		return modelo.Usuario{}, errors.New("errores creando Usuario, fallo conexion DB ")
 	}
 
-	err = db.Where("ID=?", id).First(&U).Error
+	err = db.Where("id=?", id).First(&U).Error
 	return U, err
 
 }
@@ -48,7 +49,7 @@ func Delete_usuario(id uint) error {
 		return errors.New("errores creando Usuario, fallo conexion DB ")
 	}
 
-	err = db.Where("ID=?", id).Delete(&U).Error
+	err = db.Where("id=?", id).Delete(&U).Error
 	return err
 
 }
@@ -82,9 +83,30 @@ func Get_User_by_unique(tipo_ide modelo.Tipo_ide, identificacion uint) (modelo.U
 	return u, nil
 }
 
+func Get_User_by_ID(ID uint) (modelo.Usuario, error) {
+
+	db, err := database.Database()
+	var u modelo.Usuario
+	if err != nil {
+		return modelo.Usuario{}, errors.New("errores DB conexion")
+	}
+	err = db.Model(&modelo.Usuario{}).
+		Where("id =? ", ID).
+		First(&u).Error
+
+	if err != nil {
+		return modelo.Usuario{}, errors.New("NO existe el usuario")
+	}
+
+	return u, nil
+}
+
 func Create_admin() error {
 
 	db, err := database.Database()
+
+	clave1 := utilidades.GenerarSHA254("admin")
+	texto, _ := utilidades.EncryptAES(clave1, "Hola mundo")
 	var u modelo.Usuario = modelo.Usuario{
 		ID:       1,
 		Nombre:   "admin",
@@ -93,9 +115,10 @@ func Create_admin() error {
 		Telefono: 0000000000,
 		Num_ide:  0,
 		Tipo_id:  "CC",
-		Clave1:   "8C6976E5B5410415BDE908BD4DEE15DFB167A9C873FC4BB8A81F6F2AB448A918",
-		Texto:    "",
+		Clave1:   clave1,
+		Texto:    texto,
 	}
+	u.Set_admin()
 
 	if err != nil {
 		return err

@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"log"
 	"net/http"
 	"proyecto_teleco/controlador"
 	"proyecto_teleco/modelo"
@@ -12,28 +13,39 @@ import (
 // Get usuario de la base de datos
 // @param ID
 func Get_usuario(c *fiber.Ctx) error {
-	var Lg modelo.Loguin_persona
-	if err := c.BodyParser(&Lg); err != nil {
-		u, err2 := controlador.Get_User_by_unique(Lg.Tipo_ide, Lg.Numero_identidad)
-		if err2 != nil {
-			return c.SendStatus(http.StatusBadRequest)
-		}
-		if u.Validar_llave(Lg.Password) != nil {
-			return c.SendStatus(http.StatusUnauthorized)
-		}
-		return c.JSON(u)
+
+	ID, err := strconv.ParseUint(c.Get("UserId"), 10, -1)
+	Clave := c.Get("Clave")
+	if err != nil || Clave == "" {
+		return c.SendStatus(http.StatusBadRequest)
 	}
-	return c.SendStatus(http.StatusBadRequest)
+	u, err2 := controlador.Get_User_by_ID(uint(ID))
+	if err2 != nil {
+		return c.SendStatus(http.StatusBadRequest)
+	}
+	if u.Validar_llave(u.Clave1) != nil {
+		return c.SendStatus(http.StatusUnauthorized)
+	}
+	return c.JSON(u)
+
 }
 func Create_usuario(c *fiber.Ctx) error {
 	var Lg modelo.Login_Datos
-	if err := c.BodyParser(Lg); err != nil {
-		u, err2 := controlador.Get_User_by_unique(Lg.Login.Tipo_ide, Lg.Login.Numero_identidad)
-		if err2 != nil {
-			return c.Status(http.StatusBadRequest).SendString(err2.Error())
-		}
-		if u.Is_admin() {
-			if u.Validar_llave(Lg.Login.Password) != nil {
+	ID, err := strconv.ParseUint(c.Get("UserId"), 10, 0)
+	Clave := c.Get("Clave")
+
+	if err != nil || Clave == "" {
+		return c.SendStatus(http.StatusBadRequest)
+	}
+	u, err2 := controlador.Get_User_by_ID(uint(ID))
+
+	if err2 != nil {
+		return c.Status(http.StatusBadRequest).SendString(err2.Error())
+	}
+	if u.Is_admin() {
+		err3 := c.BodyParser(&Lg)
+		if err3 == nil {
+			if u.Validar_llave(Clave) != nil {
 				return c.Status(http.StatusUnauthorized).SendString("llave incorrecta ")
 			}
 			dd := Lg.Datos.Clave1
@@ -58,11 +70,11 @@ func Create_usuario(c *fiber.Ctx) error {
 			controlador.Enviar_correo(u.Correo, "Envio correo con clave nueva", msg)
 
 			return c.SendStatus(http.StatusOK)
-		}
-		return c.Status(http.StatusUnauthorized).SendString("Usted no es Admin, no autorizado")
 
+		}
+		return c.SendString(err3.Error())
 	}
-	return c.SendStatus(http.StatusBadRequest)
+	return c.Status(http.StatusUnauthorized).SendString("Usted no es Admin, no autorizado")
 
 }
 
@@ -70,14 +82,22 @@ func Update_usuario(c *fiber.Ctx) error {
 	var Lg modelo.Login_Datos
 	var msg string = ""
 	if err := c.BodyParser(Lg); err != nil {
-		u, err2 := controlador.Get_User_by_unique(Lg.Login.Tipo_ide, Lg.Login.Numero_identidad)
-		if err2 != nil {
+		var Lg modelo.Login_Datos
+		ID, err := strconv.ParseUint(c.Get("UserId"), 10, 0)
+		Clave := c.Get("Clave")
+		ID_a, err := strconv.ParseUint(c.Query("ID"), 10, 0)
+
+		if err != nil || Clave == "" {
 			return c.SendStatus(http.StatusBadRequest)
+		}
+		u, err2 := controlador.Get_User_by_ID(uint(ID))
+		if err2 != nil {
+			return c.Status(http.StatusBadRequest).SendString(err2.Error())
 		}
 		if u.Validar_llave(Lg.Login.Password) != nil {
 			return c.Status(http.StatusUnauthorized).SendString("llave incorrecta ")
 		}
-		if u.Is_admin() || (Lg.Datos.Num_ide == u.Num_ide && Lg.Datos.Tipo_id == u.Tipo_id) {
+		if u.Is_admin() || u.ID == uint(ID_a) {
 			dd := Lg.Datos.Clave1
 			err = Lg.Datos.Validar_usuario()
 			if err != nil {
@@ -106,46 +126,51 @@ func Update_usuario(c *fiber.Ctx) error {
 
 }
 func Delete_usuario(c *fiber.Ctx) error {
-	var Lg modelo.Loguin_persona
-	if err := c.BodyParser(Lg); err != nil {
-		u, err2 := controlador.Get_User_by_unique(Lg.Tipo_ide, Lg.Numero_identidad)
-		if err2 != nil {
-			return c.Status(fiber.StatusBadRequest).SendString("error ::: " + err.Error())
-		}
 
-		if u.Is_admin() {
-			if u.Validar_llave(Lg.Password) != nil {
-				return c.Status(http.StatusUnauthorized).SendString("llave incorrecta ")
-			}
-			ID, err3 := strconv.ParseUint(Lg.ID, 10, -1)
-			if err3 != nil {
-				return c.SendStatus(http.StatusBadRequest)
-			}
-			err = controlador.Delete_usuario(uint(ID))
-			if err != nil {
-				return c.SendStatus(http.StatusBadRequest)
-			}
-			return c.SendStatus(http.StatusOK)
-		}
-		return c.Status(http.StatusUnauthorized).SendString("Usted no es Admin no autorizado")
+	ID, err := strconv.ParseUint(c.Get("UserId"), 10, 0)
+	Clave := c.Get("Clave")
+	ID_a, err := strconv.ParseUint(c.Query("ID"), 10, 0)
 
+	if err != nil || Clave == "" {
+		return c.SendStatus(http.StatusBadRequest)
 	}
-	return c.SendStatus(http.StatusBadRequest)
+	u, err2 := controlador.Get_User_by_ID(uint(ID))
+	if err2 != nil {
+		return c.Status(http.StatusBadRequest).SendString(err2.Error())
+	}
+
+	if u.Is_admin() {
+		if u.Validar_llave(Clave) != nil {
+			return c.Status(http.StatusUnauthorized).SendString("llave incorrecta ")
+		}
+		err = controlador.Delete_usuario(uint(ID_a))
+		if err != nil {
+			return c.SendStatus(http.StatusBadRequest)
+		}
+		return c.SendStatus(http.StatusOK)
+	}
+	return c.Status(http.StatusUnauthorized).SendString("Usted no es Admin no autorizado")
 
 }
 
 func List_all_usuario(c *fiber.Ctx) error {
-	var Lg modelo.Loguin_persona
-	if err := c.BodyParser(Lg); err != nil {
-		u, err2 := controlador.Get_User_by_unique(Lg.Tipo_ide, Lg.Numero_identidad)
-		if err2 != nil {
-			return c.Status(fiber.StatusBadRequest).SendString("error ::: " + err.Error())
-		}
-		if u.Is_admin() {
-			a, _ := controlador.List_all_user()
-			return c.JSON(a)
-		}
+	log.Println("::::::::::::::...", c.Get("UserId"), c.Get("Clave"))
+	ID, err := strconv.ParseUint(c.Get("UserId"), 10, 0)
+	Clave := c.Get("Clave")
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).SendString("error ::: " + err.Error())
 	}
-	return c.SendStatus(http.StatusBadRequest)
-
+	if err != nil || Clave == "" {
+		return c.SendStatus(http.StatusBadRequest)
+	}
+	u, err2 := controlador.Get_User_by_ID(uint(ID))
+	if err2 != nil {
+		return c.Status(fiber.StatusBadRequest).SendString("error ::: " + err.Error())
+	}
+	log.Println("admin:::", u.Nombre, u.Is_admin())
+	if u.Is_admin() {
+		a, _ := controlador.List_all_user()
+		return c.JSON(a)
+	}
+	return c.SendStatus(fiber.StatusUnauthorized)
 }
