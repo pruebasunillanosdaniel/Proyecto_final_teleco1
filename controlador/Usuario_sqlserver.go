@@ -6,6 +6,8 @@ import (
 	"proyecto_teleco/database"
 	"proyecto_teleco/modelo"
 	"proyecto_teleco/utilidades"
+
+	"gorm.io/gorm"
 )
 
 func Crear_usuario(U *modelo.Usuario) error {
@@ -47,7 +49,7 @@ func Delete_usuario(id uint) error {
 	db, err := database.Database()
 	var U modelo.Usuario
 	if err != nil {
-		return errors.New("errores creando Usuario, fallo conexion DB ")
+		return errors.New("errores eliminando Usuario, fallo conexion DB ")
 	}
 
 	err = db.Where("id=?", id).Delete(&U).Error
@@ -95,18 +97,21 @@ func Get_User_by_ID(ID uint) (modelo.Usuario, error) {
 		Where("id =? ", ID).
 		First(&u).Error
 
-	if err != nil {
-		return modelo.Usuario{}, errors.New("NO existe el usuario")
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return modelo.Usuario{}, errors.New("no existe el usuario")
+	} else if err != nil {
+		return modelo.Usuario{}, err
+
 	}
 
 	return u, nil
 }
 
-func Create_admin() error {
+func Create_init() error {
 
 	db, err := database.Database()
 
-	db.AutoMigrate(&modelo.Usuario{})
+	db.AutoMigrate(&modelo.Usuario{}, &modelo.JWT_database{})
 	clave1 := utilidades.GenerarSHA256_with_32bits("admin")
 	texto, _ := utilidades.EncryptAES(clave1, "Hola mundo")
 	var u modelo.Usuario = modelo.Usuario{

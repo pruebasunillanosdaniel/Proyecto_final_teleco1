@@ -18,13 +18,16 @@ func Crear_servidor() {
 	app.Get("", func(c *fiber.Ctx) error {
 		return c.JSON(map[string]string{"aaa": "asdasdf"})
 	})
+	app.Get("/login", Login)
 	app.Get("/List_users", List_all_usuario)
-	app.Post("/crearusuario", Create_usuario)
-	app.Get("/leer_usaurio", Get_usuario)
-	app.Patch("/actualizarusuario", Update_usuario)
-	app.Delete("/eliminar_usuario", Delete_usuario)
-	app.Get("/Texto", Get_textClave)
-	app.Get("/validar", Valida_db)
+	app.Post("/Create_user", Create_usuario)
+	app.Get("/Read_user", Get_usuario)
+	app.Patch("/Update_user/:ID", Update_usuario)
+	app.Delete("/Delete/:ID", Delete_usuario)
+	app.Get("/Text", Get_textClave)
+	app.Get("/DB_connection", Valida_db)
+	app.Get("/logout", Logout)
+
 	//app.Get("/paths", Valida_db_variables)
 
 	port := os.Getenv("HTTP_PLATFORM_PORT")

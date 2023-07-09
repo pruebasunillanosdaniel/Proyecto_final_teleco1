@@ -8,7 +8,7 @@ import (
 
 func main() {
 	log.Println("v ...")
-	err := controlador.Create_admin()
+	err := controlador.Create_init()
 	if err != nil {
 		log.Println(err)
 	}

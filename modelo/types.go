@@ -25,6 +25,7 @@ type Usuario struct {
 	Texto    string   `json:"Texto"`
 	Correo   string   `json:"Correo"`
 	Clave1   string   `json:"Clave"`
+	TokenID  uint     `json:"-"`
 }
 
 func (U *Usuario) Is_admin() bool {
@@ -42,8 +43,7 @@ func (U *Usuario) Validar_llave(clave string) error {
 	return errors.New("error,llave incorrecta ")
 }
 
-func (U *Usuario) Validar_usuario() error {
-
+func Validaciones(U *Usuario) error {
 	if utilidades.Validar_correo(U.Correo) {
 		return errors.New("error Correo Incorrecto")
 	}
@@ -59,6 +59,15 @@ func (U *Usuario) Validar_usuario() error {
 	if U.Clave1 != "" {
 		return errors.New("error Clave  Vacio")
 	}
+	return nil
+
+}
+
+func (U *Usuario) Validar_usuario() error {
+
+	if errv := Validaciones(U); errv != nil {
+		return errv
+	}
 	clave2 := utilidades.GenerarSHA256_with_32bits(U.Clave1)
 
 	enc, err := utilidades.EncryptAES(clave2, U.Texto)
@@ -70,25 +79,11 @@ func (U *Usuario) Validar_usuario() error {
 	return nil
 }
 
-func (U *Usuario) Update_usuario(Un *Usuario) error {
-	if Un.Clave1 != "" {
-		return errors.New("error Clave  Vacio")
+func (U *Usuario) CheckUpdate_usuario(Un *Usuario) error {
+	if errv := Validaciones(Un); errv != nil {
+		return errv
 	}
-	if utilidades.Validar_correo(Un.Correo) {
-		return errors.New("error Correo Incorrecto")
-	}
-	if utilidades.Validar_telefono(fmt.Sprint(Un.Telefono)) {
-		return errors.New("error: Telefono Incorrecto ,porfavor un numero de exactamente 10 digitos")
-	}
-	if utilidades.Validar_clave_signos(Un.Correo) {
-		return errors.New("error Correo Incorrecto")
-	}
-	if U.Texto == "" {
-		return errors.New("error Texto  Vacio")
-	}
-	if Un.Clave1 != "" {
-		return errors.New("error Clave  Vacio")
-	}
+
 	if U.Clave1 != Un.Clave1 {
 
 		txt, err2 := utilidades.DecryptAES(U.Clave1, U.Texto)

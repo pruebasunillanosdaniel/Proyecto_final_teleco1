@@ -4,10 +4,8 @@ import (
 	"crypto/aes"
 	"crypto/sha256"
 	"encoding/base64"
-	"encoding/hex"
 	"errors"
 	"fmt"
-	"log"
 	"strings"
 	"time"
 )
@@ -20,7 +18,7 @@ func EncryptAES(key string, texto string) (string, error) {
 		if len(key) < 32 {
 			key = strings.Trim(strings.ReplaceAll(fmt.Sprint(make([]int, 32-len(key))), " ", ""), "[]") + key
 		} else {
-			return "", errors.New("Clave superior a lo permitido por favor una clave menor a 32 caracteres")
+			return "", errors.New("clave superior a lo permitido por favor una clave menor a 32 caracteres")
 		}
 	}
 
@@ -37,22 +35,20 @@ func EncryptAES(key string, texto string) (string, error) {
 
 	c.Encrypt(out, []byte(texto))
 
-	return hex.EncodeToString(out), nil
+	return base64.StdEncoding.EncodeToString(out), nil
 
 }
 
 func DecryptAES(key string, ct string) (string, error) {
-	log.Println(key)
 
 	if len(key) != 32 {
 		if len(key) < 32 {
 			key = strings.Trim(strings.ReplaceAll(fmt.Sprint(make([]int, 32-len(key))), " ", ""), "[]") + key
 		} else {
-			return "", errors.New("Clave superior a lo permitido por favor una clave menor a 32 caracteres")
+			return "", errors.New("clave superior a lo permitido por favor una clave menor a 32 caracteres")
 		}
 	}
-	log.Println(key)
-	ciphertext, _ := hex.DecodeString(ct)
+	ciphertext, _ := base64.StdEncoding.DecodeString(ct)
 
 	c, err := aes.NewCipher([]byte(key))
 	if err != nil {
