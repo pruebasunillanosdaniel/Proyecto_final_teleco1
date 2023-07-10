@@ -5,7 +5,6 @@ import (
 	"log"
 	"proyecto_teleco/database"
 	"proyecto_teleco/modelo"
-	"proyecto_teleco/utilidades"
 
 	"gorm.io/gorm"
 )
@@ -16,7 +15,7 @@ func Crear_usuario(U *modelo.Usuario) error {
 	if err != nil {
 		return errors.New("errores creando Usuario, fallo conexion DB ")
 	}
-	err = db.Table("Usuarios").Create(U).Error
+	err = db.Model(&modelo.Usuario{}).Create(U).Error
 	return err
 }
 
@@ -110,28 +109,38 @@ func Get_User_by_ID(ID uint) (modelo.Usuario, error) {
 func Create_init() error {
 
 	db, err := database.Database()
-
-	db.AutoMigrate(&modelo.Usuario{}, &modelo.JWT_database{})
-	clave1 := utilidades.GenerarSHA256_with_32bits("admin")
-	texto, _ := utilidades.EncryptAES(clave1, "Hola mundo")
+	if err != nil {
+		return err
+	}
+	err = db.AutoMigrate(&modelo.Usuario{}, &modelo.JWT_database{})
+	if err != nil {
+		return err
+	}
 	var u modelo.Usuario = modelo.Usuario{
 		ID:       1,
 		Nombre:   "admin",
 		Apellido: "admin",
 		Correo:   "solrevisdor143@gmail.com",
-		Telefono: 0000000000,
+		Telefono: 1234567890,
 		Num_ide:  0,
 		Tipo_id:  "CC",
-		Clave1:   clave1,
-		Texto:    texto,
+		Clave1:   "admin",
+		Texto:    "Hola mundo",
+		Admin:    true,
 	}
+
+	err = u.Validar_usuario()
+	if err != nil {
+		return err
+	}
+	log.Println("paso usuario")
 	u.Set_admin()
-
-	log.Println(u.Is_admin())
-
 	if err != nil {
 		return err
 	}
 	err = db.Model(&modelo.Usuario{}).FirstOrCreate(&u).Error
+	if errors.Is(gorm.ErrDuplicatedKey, err) {
+		return nil
+	}
 	return err
 }

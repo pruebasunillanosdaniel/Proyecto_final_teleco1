@@ -82,9 +82,8 @@ func GenerarSHA256_with_32bits(texto string) string {
 	if len(texto) < 32 {
 		texto = strings.Trim(strings.ReplaceAll(fmt.Sprint(make([]int, 32-len(texto))), " ", ""), "[]") + texto
 	}
-
 	conv := sha256.Sum256([]byte(texto))
-	return base64.StdEncoding.EncodeToString(conv[:])
+	return string(conv[:])
 }
 
 func GenerarShawithTime() string {

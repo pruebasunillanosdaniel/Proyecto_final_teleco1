@@ -16,10 +16,10 @@ type JWT_DATA struct {
 }
 
 type JWT_database struct {
-	ID         uint
-	Insercion  time.Time
-	Datos      string
-	Id_usuario Usuario `gorm:"foreignKey:TokenID;references:usuario"`
+	ID        uint `gorm:"primaryKey"`
+	Insercion time.Time
+	Datos     string
+	Token     uint
 }
 
 func Create_Jwt_database(u Usuario) (JWT_database, error) {
@@ -34,12 +34,10 @@ func Create_Jwt_database(u Usuario) (JWT_database, error) {
 		Fecha_inicio: time.Now(),
 		ID:           u.ID,
 	}
-	t := jwt.NewWithClaims(jwt.SigningMethodES256, &DD)
+	t := jwt.NewWithClaims(jwt.SigningMethodHS256, &DD)
 
 	JJ.Datos, err = t.SignedString([]byte(utilidades.Secret_jwt))
 	JJ.Insercion = time.Now()
-	JJ.Id_usuario = u
-
 	return JJ, err
 }
 
@@ -61,8 +59,5 @@ func (DD *JWT_database) Is_valid() bool {
 	t, _ := jwt.ParseWithClaims(DD.Datos, salida, func(t *jwt.Token) (interface{}, error) {
 		return []byte(utilidades.Secret_jwt), nil
 	})
-	if t.Valid {
-		return true
-	}
-	return false
+	return t.Valid
 }

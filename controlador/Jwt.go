@@ -53,14 +53,19 @@ func Read_JWT_token(token string) (modelo.JWT_database, error) {
 }
 
 func Read_JWT_usuario(id_usuario uint) (modelo.JWT_database, error) {
-
+	var err error
 	db, err := database.Database()
-	var U modelo.JWT_database
 	if err != nil {
 		return modelo.JWT_database{}, errors.New("errores leyendo Usuario, fallo conexion DB ")
 	}
-	err = db.Where("usuario=?", id_usuario).First(&U).Error
-	return U, err
+
+	var Ua modelo.JWT_database = modelo.JWT_database{}
+
+	err = db.Model(&modelo.JWT_database{}).Where("token=?", id_usuario).First(&Ua).Error
+	if err != nil {
+		return modelo.JWT_database{}, errors.New("errores no existe token ")
+	}
+	return Ua, err
 
 }
 
@@ -85,7 +90,7 @@ func Delete_JWT_usuario(id_usuario uint) error {
 		return errors.New("errores eliminando Usuario, fallo conexion DB ")
 	}
 
-	err = db.Where("usuario=?", id_usuario).Delete(&U).Error
+	err = db.Where("token=?", id_usuario).Delete(&U).Error
 	return err
 
 }

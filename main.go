@@ -7,10 +7,10 @@ import (
 )
 
 func main() {
-	log.Println("v ...")
+	log.SetFlags(log.Lshortfile | log.Llongfile)
 	err := controlador.Create_init()
 	if err != nil {
-		log.Println(err)
+		log.Fatal(err)
 	}
 	routes.Crear_servidor()
 

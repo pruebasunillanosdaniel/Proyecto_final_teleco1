@@ -11,7 +11,7 @@ var (
 	Azure_port     string = os.Getenv("port_azure")
 	Azure_user     string = os.Getenv("user_db_user")
 	Azure_password string = os.Getenv("azure_password")
-	Secret_jwt     string = os.Getenv("secret_jwt")
+	Secret_jwt     string = os.Getenv("clave_token")
 	Clave_texto16  string = os.Getenv("clave_texto16")
 )
 

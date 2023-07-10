@@ -15,7 +15,7 @@ func Login(c *fiber.Ctx) error {
 
 	var Clave string = c.Get("Clave")
 
-	if Clave != "" {
+	if Clave == "" {
 		return c.Status(fiber.StatusBadRequest).SendString("Clave no reconocible")
 	}
 
@@ -29,23 +29,46 @@ func Login(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).SendString(err.Error())
 	}
+
 	if err := u.Validar_llave(Clave); err != nil {
 		return c.Status(fiber.StatusBadRequest).SendString(err.Error())
 	}
 
 	JT, err := controlador.Read_JWT_usuario(u.ID)
-	if err == nil && !JT.Is_valid() {
-		controlador.Delete_JWT(JT.ID)
-	} else {
-		return c.Status(fiber.StatusOK).SendString(JT.Datos)
-	}
-	JWT_token, err := modelo.Create_Jwt_database(u)
-	if err != nil {
-		return c.Status(fiber.StatusBadRequest).SendString(err.Error())
-	}
-	controlador.Crear_JWT(&JWT_token)
-	return c.Status(fiber.StatusOK).SendString(JWT_token.Datos)
 
+	if err != nil {
+
+		JWT_token, err := modelo.Create_Jwt_database(u)
+		if err != nil {
+			return c.Status(fiber.StatusBadRequest).SendString(err.Error())
+		}
+		JWT_token.Token = u.ID
+		err = controlador.Crear_JWT(&JWT_token)
+		if err != nil {
+			return c.Status(fiber.StatusBadRequest).SendString(err.Error())
+		}
+		return c.Status(fiber.StatusOK).SendString(JWT_token.Datos)
+	} else {
+
+		if !JT.Is_valid() {
+			err = controlador.Delete_JWT(JT.ID)
+			if err != nil {
+				return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
+			}
+			JWT_token, err := modelo.Create_Jwt_database(u)
+			if err != nil {
+				return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
+			}
+			err = controlador.Crear_JWT(&JWT_token)
+			if err != nil {
+				return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
+			}
+			return c.Status(fiber.StatusOK).SendString(JWT_token.Datos)
+		} else if JT.Is_valid() {
+			return c.Status(fiber.StatusOK).SendString(JT.Datos)
+		}
+	}
+	return c.Status(fiber.StatusBadRequest).SendString("Mala disposicion en loguin")
 }
 
 func Logout(c *fiber.Ctx) error {
