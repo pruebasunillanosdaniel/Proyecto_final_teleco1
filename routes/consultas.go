@@ -1,7 +1,10 @@
 package routes
 
 import (
+	"encoding/base64"
+	"errors"
 	"fmt"
+	"log"
 	"net/http"
 	"proyecto_teleco/controlador"
 	"proyecto_teleco/modelo"
@@ -18,16 +21,17 @@ func check_user(c *fiber.Ctx) (modelo.Usuario, error) {
 	Clave := c.Get("Token")
 
 	if Clave == "" {
-		return modelo.Usuario{}, c.Status(http.StatusBadRequest).SendString("token vacio")
+		return modelo.Usuario{}, errors.New("token vacio")
 	}
-	ID, err := modelo.Get_JWT_ID(Clave)
+
+	JT, err := controlador.Read_JWT_token(Clave)
 
 	if err != nil {
-		return modelo.Usuario{}, c.Status(http.StatusBadRequest).SendString(err.Error())
+		return modelo.Usuario{}, err
 	}
-	u, err2 := controlador.Get_User_by_ID(uint(ID))
+	u, err2 := controlador.Get_User_by_ID(JT.Token)
 	if err2 != nil {
-		return modelo.Usuario{}, c.SendStatus(http.StatusBadRequest)
+		return modelo.Usuario{}, err2
 	}
 
 	return u, nil
@@ -71,6 +75,7 @@ func Create_usuario(c *fiber.Ctx) error {
 	if u.Is_admin() {
 
 		err3 := c.BodyParser(&Lg)
+		log.Println("err create +", err3)
 		if err3 == nil {
 
 			dd := Lg.Clave1
@@ -86,7 +91,7 @@ func Create_usuario(c *fiber.Ctx) error {
 			return c.SendStatus(http.StatusOK)
 
 		}
-		return c.SendString(err3.Error())
+		return c.Status(http.StatusBadRequest).SendString(err3.Error())
 	}
 	return c.Status(http.StatusUnauthorized).SendString("Usted no es Admin, no autorizado")
 
@@ -94,38 +99,39 @@ func Create_usuario(c *fiber.Ctx) error {
 
 func Update_usuario(c *fiber.Ctx) error {
 	var Lg modelo.Usuario
-	if err := c.BodyParser(Lg); err != nil {
-		var Lg modelo.Usuario
-
-		ID_a, err := strconv.ParseUint(c.Query("ID"), 10, 0)
-		if err != nil {
-			return c.Status(fiber.StatusBadRequest).SendString("id no legible")
-		}
-		u, err := check_user(c)
-		if err != nil {
-			return err
-		}
-
-		if u.Is_admin() || u.ID == uint(ID_a) {
-
-			dd := Lg.Clave1
-			err = u.CheckUpdate_usuario(&Lg)
-			if err != nil {
-				return c.Status(http.StatusBadRequest).SendString(err.Error())
-			}
-			err = controlador.Update_usuario(&Lg)
-			if err != nil {
-				return c.SendStatus(http.StatusBadRequest)
-			}
-
-			Send_mensaje("Datos actualizados", u, dd)
-
-			return c.SendStatus(http.StatusOK)
-		}
-		return c.Status(http.StatusUnauthorized).SendString("Usted no esta autorizado")
-
+	err := c.BodyParser(&Lg)
+	if err != nil {
+		return c.SendStatus(http.StatusBadRequest)
 	}
-	return c.SendStatus(http.StatusBadRequest)
+
+	ID_a, err := strconv.ParseUint(c.Query("ID"), 10, 0)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).SendString("id no legible")
+	}
+
+	u, err := check_user(c)
+	if err != nil {
+		return err
+	}
+
+	if u.Is_admin() || u.ID == uint(ID_a) {
+
+		dd := Lg.Clave1
+		err = u.CheckUpdate_usuario(&Lg)
+		if err != nil {
+			return c.Status(http.StatusBadRequest).SendString(err.Error())
+		}
+		err = controlador.Update_usuario(&Lg)
+		log.Printf("update user")
+		if err != nil {
+			return c.SendStatus(http.StatusBadRequest)
+		}
+
+		Send_mensaje("Datos actualizados", u, dd)
+
+		return c.SendStatus(http.StatusOK)
+	}
+	return c.Status(http.StatusUnauthorized).SendString("Usted no esta autorizado")
 
 }
 func Delete_usuario(c *fiber.Ctx) error {
@@ -172,7 +178,12 @@ func Get_textClave(c *fiber.Ctx) error {
 	if err != nil {
 		return err
 	}
-	texto, err3 := utilidades.DecryptAES(u.Clave1, u.Texto)
+	clave_or, err := base64.StdEncoding.DecodeString(u.Clave1)
+	if err != nil {
+		return err
+	}
+
+	texto, err3 := utilidades.DecryptAES(string(clave_or), u.Texto)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).SendString(err3.Error())
 	}

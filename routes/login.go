@@ -2,6 +2,7 @@ package routes
 
 import (
 	"fmt"
+	"log"
 	"proyecto_teleco/controlador"
 	"proyecto_teleco/database"
 	"proyecto_teleco/modelo"
@@ -35,9 +36,10 @@ func Login(c *fiber.Ctx) error {
 	}
 
 	JT, err := controlador.Read_JWT_usuario(u.ID)
+	log.Println("-- log mensaje read jwt", err)
 
 	if err != nil {
-
+		log.Println("crear nuevo token")
 		JWT_token, err := modelo.Create_Jwt_database(u)
 		if err != nil {
 			return c.Status(fiber.StatusBadRequest).SendString(err.Error())
@@ -49,6 +51,7 @@ func Login(c *fiber.Ctx) error {
 		}
 		return c.Status(fiber.StatusOK).SendString(JWT_token.Datos)
 	} else {
+		log.Println(" token antiguo", JT.Datos, JT.Is_valid())
 
 		if !JT.Is_valid() {
 			err = controlador.Delete_JWT(JT.ID)
@@ -59,27 +62,32 @@ func Login(c *fiber.Ctx) error {
 			if err != nil {
 				return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
 			}
+			JWT_token.Token = u.ID
 			err = controlador.Crear_JWT(&JWT_token)
 			if err != nil {
 				return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
 			}
+
 			return c.Status(fiber.StatusOK).SendString(JWT_token.Datos)
-		} else if JT.Is_valid() {
-			return c.Status(fiber.StatusOK).SendString(JT.Datos)
+
 		}
+
+		return c.Status(fiber.StatusOK).SendString(JT.Datos)
+
 	}
-	return c.Status(fiber.StatusBadRequest).SendString("Mala disposicion en loguin")
 }
 
 func Logout(c *fiber.Ctx) error {
 
 	u, err := check_user(c)
-	if err != nil {
-		return err
-	}
-	err = controlador.Delete_JWT_usuario(u.ID)
+	log.Println("objetos de logout", u, err)
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).SendString(err.Error())
+	}
+	log.Println(u, err)
+	err = controlador.Delete_JWT_usuario(u.ID)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
 	}
 	return c.Status(fiber.StatusOK).SendString("Gracias por su visita")
 

@@ -4,6 +4,8 @@ import (
 	"errors"
 	"proyecto_teleco/database"
 	"proyecto_teleco/modelo"
+
+	"gorm.io/gorm"
 )
 
 func Crear_JWT(U *modelo.JWT_database) error {
@@ -13,6 +15,16 @@ func Crear_JWT(U *modelo.JWT_database) error {
 		return errors.New("errores creando Usuario, fallo conexion DB ")
 	}
 	err = db.Table("Jwt_databases").Create(U).Error
+	return err
+}
+
+func Crear_exist_JWT(U *modelo.JWT_database) error {
+
+	db, err := database.Database()
+	if err != nil {
+		return errors.New("errores creando Usuario, fallo conexion DB ")
+	}
+	err = db.Table("Jwt_databases").FirstOrCreate(U).Error
 	return err
 }
 
@@ -48,6 +60,9 @@ func Read_JWT_token(token string) (modelo.JWT_database, error) {
 		return modelo.JWT_database{}, errors.New("errores creando Usuario, fallo conexion DB ")
 	}
 	err = db.Where("datos=?", token).First(&U).Error
+	if errors.Is(gorm.ErrRecordNotFound, err) {
+		return modelo.JWT_database{}, errors.New("NO existe el Token ,porfavor genere uno")
+	}
 	return U, err
 
 }

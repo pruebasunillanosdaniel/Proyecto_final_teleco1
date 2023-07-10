@@ -27,7 +27,7 @@ type Usuario struct {
 	Texto      string         `json:"Texto"`
 	Correo     string         `json:"Correo"`
 	Clave1     string         `json:"Clave"`
-	Id_usuario []JWT_database `gorm:"foreignKey:Token"`
+	Id_usuario []JWT_database `json:"-" gorm:"foreignKey:Token"`
 }
 
 func (U *Usuario) Is_admin() bool {
@@ -40,8 +40,6 @@ func (U *Usuario) Set_admin() {
 func (U *Usuario) Validar_llave(clave string) error {
 	var nueva_clave string = base64.StdEncoding.EncodeToString(
 		[]byte(utilidades.GenerarSHA256_with_32bits(clave)))
-	log.Println("nueva clave", nueva_clave)
-	log.Println("clave U    ", U.Clave1)
 
 	if nueva_clave == U.Clave1 {
 		return nil
@@ -50,6 +48,7 @@ func (U *Usuario) Validar_llave(clave string) error {
 }
 
 func Validaciones(U *Usuario) error {
+	log.Println(U.Texto)
 	if U.Texto == "" {
 		return errors.New("error Texto  Vacio")
 	}
@@ -93,9 +92,12 @@ func (U *Usuario) CheckUpdate_usuario(Un *Usuario) error {
 		return errv
 	}
 
+	ct, _ := base64.StdEncoding.DecodeString(U.Clave1)
+	tt, _ := base64.StdEncoding.DecodeString(U.Texto)
+
 	if U.Clave1 != Un.Clave1 {
 
-		txt, err2 := utilidades.DecryptAES(U.Clave1, U.Texto)
+		txt, err2 := utilidades.DecryptAES(string(ct), string(tt))
 		if err2 != nil {
 			return err2
 		}
